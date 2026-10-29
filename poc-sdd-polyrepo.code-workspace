@@ -1,0 +1,6 @@
+{
+  "folders": [
+    { "path": ".", "name": "hub (specs)" },
+    { "path": "repo-service-sdd-polyrepo-poc", "name": "service (code)" }
+  ]
+}

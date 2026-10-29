@@ -1,0 +1,25 @@
+installed:
+- multi-repo-sync
+settings:
+  auto_execute_hooks: true
+hooks:
+  after_plan:
+  - extension: multi-repo-sync
+    command: speckit.multi-repo-sync.analyze
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.multi-repo-sync.analyze?
+    description: Discover affected sub-repositories and record them in plan.md after
+      planning
+    condition: null
+  after_tasks:
+  - extension: multi-repo-sync
+    command: speckit.multi-repo-sync.sync
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.multi-repo-sync.sync?
+    description: Create the feature branch in the affected sub-repositories after
+      task generation (idempotent)
+    condition: null
