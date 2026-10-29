@@ -40,7 +40,12 @@ poc-sdd-polyrepo/
 
 ## 5. Hallazgos y limitaciones
 ### Bugs / comportamientos no documentados
-- **El `.gitignore` del hub bloquea la detección del repo hijo** en modo `independent`. Solución: `repo-service/*` + `!repo-service/.git/`.
+- **El `.gitignore` del hub bloquea la detección del repo hijo** en modo `independent`. Solución: 
+```gitignore
+# .gitignore del hub
+repos/*
+!repos/*/.git/
+```
 - **`after_plan` devuelve `state: absent`** cuando la rama no existe, no cuando falta el repo. Mensaje ambiguo.
 - **`after_tasks` crea la rama sin el prefijo `feat/`** declarado en `plan.md`.
 
