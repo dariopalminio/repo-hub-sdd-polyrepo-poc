@@ -1,1 +1,0 @@
-# Hub de Specs (SDD Polyrepo POC)
