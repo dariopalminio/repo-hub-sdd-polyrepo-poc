@@ -12,6 +12,23 @@ Antes de empezar, verifica que tienes instalado:
 - **`uv`** y **Spec-Kit** (`specify --version`)
 - **VS Code** con GitHub Copilot Chat en Agent Mode
 
+#### Instalar meta
+
+Para instalar la CLI de `meta`, sigue las instrucciones oficiales según tu sistema operativo. Por ejemplo, en Windows:
+
+```powershell
+irm https://raw.githubusercontent.com/gitkb/meta/main/install.ps1 | iex
+```
+O de esta manera:
+```powershell
+powershell -Command "irm https://raw.githubusercontent.com/gitkb/meta/main/install.ps1 | iex"
+meta --version
+```
+# Ver la ruta exacta del ejecutable que se está llamando
+```powershell
+Get-Command meta | Select-Object Source
+```
+
 ---
 
 ### 🪜 Paso 1: Clonar el repo hub y darle un commit inicial
