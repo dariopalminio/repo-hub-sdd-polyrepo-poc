@@ -12,16 +12,16 @@ sin dispersar los specs ni requerir atomicidad transaccional entre repos.
 **Problema:** SDD asume que spec e implementación viven en el mismo árbol; el polyrepo garantiza que no. 
 El agente no puede ver el hub desde el repo de código, y los specs se fragmentan si se copian.
 
-**Hipótesis:** Con `meta` CLI materializando ambos repos como *peers*, un workspace multi-root en VS Code, 
+**Hipótesis:** Con `meta` CLI (https://github.com/gitkb/meta) materializando ambos repos como *peers*, un workspace multi-root en VS Code, 
 y las anotaciones `[repo]` en `tasks.md`, el agente escribirá el código en el repo correcto 
 sin crear `specs/` dentro de él.
 
 ## 3. Arquitectura de la POC (Estructura)
 ```
-poc-sdd-polyrepo/
+poc-sdd-polyrepo/   ← repo root/hub (repo-hub-sdd-polyrepo-poc)
 ├── specs/          ← specs canónicos (Spec-Kit vive aquí)
 ├── repos/          ← repos de código (no versionados en este hub)
-│   └── repo-service-sdd-polyrepo-poc/
+│   └── repo-service-sdd-polyrepo-poc/ ← repo (repo-service-sdd-polyrepo-poc)
 └── .meta.yaml      ← declara los repos coordinados
 ```
 - **Herramientas:** `meta` CLI 0.2.22, Spec-Kit, `multi-repo-sync`, Copilot Agent Mode, VS Code.
