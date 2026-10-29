@@ -16,12 +16,13 @@ El agente no puede ver el hub desde el repo de código, y los specs se fragmenta
 y las anotaciones `[repo]` en `tasks.md`, el agente escribirá el código en el repo correcto 
 sin crear `specs/` dentro de él.
 
-## 3. Arquitectura de la POC
+## 3. Arquitectura de la POC (Estructura)
 ```
-poc-sdd-polyrepo/                  ← hub (Spec-Kit vive aquí)
-├── .meta.yaml                     ← declara repo-service como hijo
-├── specs/001-health-endpoint/     ← spec, plan, tasks, contract
-└── repo-service-sdd-polyrepo-poc/ ← repo de código (sin .specify/)
+poc-sdd-polyrepo/
+├── specs/          ← specs canónicos (Spec-Kit vive aquí)
+├── repos/          ← repos de código (no versionados en este hub)
+│   └── repo-service-sdd-polyrepo-poc/
+└── .meta.yaml      ← declara los repos coordinados
 ```
 - **Herramientas:** `meta` CLI 0.2.22, Spec-Kit, `multi-repo-sync`, Copilot Agent Mode, VS Code.
 - **Feature de prueba:** `GET /health` → `200 {"status":"ok"}` (contrato OpenAPI 3.1 en el hub).

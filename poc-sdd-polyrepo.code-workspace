@@ -1,6 +1,19 @@
 {
   "folders": [
-    { "path": ".", "name": "hub (specs)" },
-    { "path": "repo-service-sdd-polyrepo-poc", "name": "service (code)" }
-  ]
+    {
+      "path": ".",
+      "name": "hub (specs)"
+    },
+    {
+      "path": "repos/repo-service-sdd-polyrepo-poc",
+      "name": "service (code)"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "repos": true
+    },
+    "git.detectSubmodules": false,
+    "git.autoRepositoryDetection": "subFolders"
+  }
 }
