@@ -83,10 +83,10 @@ repo-03/specs/001-feature/ # specs de implementación para r3
 
 ### Estrategia A: "Cada repo con su spec" (Repo-Local)
 
-Implementaciones principales:
-Spec-Kit (modo por defecto): La herramienta está diseñada para operar dentro del directorio que contiene .specify/. Cada repo puede tener su propio proyecto de Spec-Kit con su constitution.md, specs/ y numeración de features independiente.
-OpenSpec (modo repo-local): Su funcionamiento por defecto es tener una carpeta openspec/ junto al código en cada repositorio.
-Spec-First (modo multirepo): Su modelo de workspace multi-repo trata cada repositorio hijo como una frontera de autoridad independiente.
+**Implementaciones principales:**
+- **Spec-Kit (modo por defecto):** La herramienta está diseñada para operar dentro del directorio que contiene .specify/. Cada repo puede tener su propio proyecto de Spec-Kit con su constitution.md, specs/ y numeración de features independiente.
+- **OpenSpec (modo repo-local):** Su funcionamiento por defecto es tener una carpeta openspec/ junto al código en cada repositorio.
+- **Spec-First (modo multirepo):** Su modelo de workspace multi-repo trata cada repositorio hijo como una frontera de autoridad independiente.
 
 ✅ Ventajas:
 Simplicidad y aislamiento: Cada equipo es dueño de sus specs sin dependencias externas.
@@ -98,20 +98,20 @@ Riesgo de drift: Las especificaciones de diferentes repos pueden desincronizarse
 
 ### Estrategia B: "Un store (hub), muchos repos"
 
-Implementaciones principales:
-OpenSpec Stores (beta): Un "store" es un repositorio independiente cuyo único trabajo es la planificación. Los repos de código se registran en la máquina para apuntar a él, y el agente lee los specs del store mientras escribe código en el repo correspondiente.
-Meta-Repo (con Spec-Kit): Aunque Spec-Kit no tiene un "store" nativo, puedes lograr el mismo efecto creando un repo central (product) que albergue .specify/ y todos los specs. Al abrir un workspace multi-root (con meta git clone), el agente puede ver el hub y los repos de código simultáneamente, y usar /speckit.implement para escribir en los repos hijos.
-Specularis: Una capa que se añade sobre tu proyecto para gobernar todos los markdown desde un solo lugar (canónico + human-in-the-loop), con auto-sincronización y gestión de conflictos para que todos los agentes y repos vean las mismas especificaciones canónicas.
-Polyrepo Workspace Kit: Una capa de coordinación ligera que ayuda a humanos y agentes a compartir un modelo de workspace explícito sin pretender que todos los repos pertenezcan a un monorepo.
-Workspace de VS Code + .gitmodules + Make: es una implementación plausible en teoría, pero en la práctica falla en puntos crítico. El workspace multi-root es útil para ti, pero Copilot Coding Agent no soporta sesiones multi-root de forma nativa. Los submódulos son, con diferencia, la pieza más problemática de la combinación. Hay tres fallos documentados que afectan directamente a tu flujo con Copilot. El code review de Copilot falla cuando un PR toca un submódulo. ¿Y la extensión multi-repo-sync de Spec-Kit? Existe y soporta submódulos: detecta los repos afectados parseando .gitmodules y crea la rama de feature en cada uno. Pero esto solo resuelve la propagación de ramas, no el acceso del agente. La extensión crea la rama, pero Copilot sigue sin poder leer ni escribir en el submódulo. Es un parche parcial, no una solución.
+**Implementaciones principales:**
+- **OpenSpec Stores (beta):** Un "store" es un repositorio independiente cuyo único trabajo es la planificación. Los repos de código se registran en la máquina para apuntar a él, y el agente lee los specs del store mientras escribe código en el repo correspondiente.
+- **Meta-Repo (con Spec-Kit):** Aunque Spec-Kit no tiene un "store" nativo, puedes lograr el mismo efecto creando un repo central (product) que albergue .specify/ y todos los specs. Al abrir un workspace multi-root (con meta git clone), el agente puede ver el hub y los repos de código simultáneamente, y usar /speckit.implement para escribir en los repos hijos.
+- **Specularis:** Una capa que se añade sobre tu proyecto para gobernar todos los markdown desde un solo lugar (canónico + human-in-the-loop), con auto-sincronización y gestión de conflictos para que todos los agentes y repos vean las mismas especificaciones canónicas.
+- **Polyrepo Workspace Kit:** Una capa de coordinación ligera que ayuda a humanos y agentes a compartir un modelo de workspace explícito sin pretender que todos los repos pertenezcan a un monorepo.
+- **Workspace de VS Code + .gitmodules + Make:** es una implementación plausible en teoría, pero en la práctica falla en puntos crítico. El workspace multi-root es útil para ti, pero Copilot Coding Agent no soporta sesiones multi-root de forma nativa. Los submódulos son, con diferencia, la pieza más problemática de la combinación. Hay tres fallos documentados que afectan directamente a tu flujo con Copilot. El code review de Copilot falla cuando un PR toca un submódulo. ¿Y la extensión multi-repo-sync de Spec-Kit? Existe y soporta submódulos: detecta los repos afectados parseando .gitmodules y crea la rama de feature en cada uno. Pero esto solo resuelve la propagación de ramas, no el acceso del agente. La extensión crea la rama, pero Copilot sigue sin poder leer ni escribir en el submódulo. Es un parche parcial, no una solución.
 
 ✅ Ventajas:
-Fuente de verdad única: Todos los agentes y equipos consultan las mismas especificaciones.
-Ideal para features cross-repo: El agente tiene contexto completo para planificar cambios que afectan a múltiples servicios.
+- Fuente de verdad única: Todos los agentes y equipos consultan las mismas especificaciones.
+- Ideal para features cross-repo: El agente tiene contexto completo para planificar cambios que afectan a múltiples servicios.
 
 ❌ Desventajas:
-Requiere configuración: Necesitas una herramienta o patrón (Stores, Meta-Repo) para que los agentes lean del hub y escriban en los repos.
-Acoplamiento de herramientas: OpenSpec Stores te ata a OpenSpec; el Meta-Repo con Spec-Kit requiere configurar el workspace multi-root.
+- Requiere configuración: Necesitas una herramienta o patrón (Stores, Meta-Repo) para que los agentes lean del hub y escriban en los repos.
+- Acoplamiento de herramientas: OpenSpec Stores te ata a OpenSpec; el Meta-Repo con Spec-Kit requiere configurar el workspace multi-root.
 
 
 ### Estrategia C: "Spec paraguas, una implementación por repositorio"
