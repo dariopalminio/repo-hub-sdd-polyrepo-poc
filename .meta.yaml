@@ -1,0 +1,5 @@
+# D:\Projects\poc-sdd-polyrepo\.meta.yaml
+projects:
+  repo-service-sdd-polyrepo-poc:
+    repo: https://github.com/dariopalminio/repo-service-sdd-polyrepo-poc.git
+    tags: [backend]
