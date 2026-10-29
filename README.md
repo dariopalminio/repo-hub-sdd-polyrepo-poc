@@ -71,3 +71,19 @@ siempre que se documenten y mitiguen los tres hallazgos de la sección 5.
 2. Validar el flujo completo de merge ordenado (hub → service).
 3. Probar con un segundo repo de código (`bff` o `front`) para validar el escalado a N repos.
 
+## Reglas de trabajo
+
+- **Nunca ejecutes `git add .` en la raíz.** Git trataría `repos/` como
+  gitlink y rompería el clonado. Usa rutas específicas: `git add specs/`.
+- Los specs viven **solo** en `specs/`. No crees `specs/` en los repos hijos.
+- Los repos hijos se clonan y sincronizan con `meta git update`.
+- Abre `poc-sdd-polyrepo.code-workspace` en VS Code para ver hub y repos
+  en un solo workspace multi-root.
+
+## Clonar el workspace completo
+
+```bash
+git clone <hub-url> && cd poc-sdd-polyrepo
+meta git update 
+```
+Esto clona el hub y materializa los repos hijos en repos/.

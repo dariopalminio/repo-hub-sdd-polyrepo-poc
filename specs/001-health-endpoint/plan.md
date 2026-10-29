@@ -8,7 +8,7 @@
 
 | Repo Path | Type | Reason |
 |-----------|------|--------|
-| repo-service-sdd-polyrepo-poc | independent | Adds the `GET /health` endpoint to this service |
+| _none_ | — | Discovery returned no candidates; the declared service at `repos/repo-service-sdd-polyrepo-poc` is ignored by the hub |
 
 ## Summary
 

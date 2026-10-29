@@ -1,9 +1,24 @@
 
-El patrón repo-service-sdd-polyrepo-poc/* + !repo-service-sdd-polyrepo-poc/.git/ en .gitignore permite que el hook multi-repo-sync detecte el repo hijo, pero hace que git status del hub lo muestre como untracked. Aceptable para la POC; en producción, evaluar si la extensión soporta targets explícitos para evitar el trade-off.
+## 1. Ignorado y descubrimiento deben verificarse juntos
 
-Actualmente git status muestra el folder del repo servicio. Entonces alguien puede hacer git add ., aunque no sube el código del servicio al hub, pero sí crea una referencia rota que rompe el clonado para cualquiera que descargue el repositorio padre. La disciplina de usar git add <ruta-específica> (por ejemplo, git add specs/) es la forma correcta de evitar este problema y mantener la integridad del polyrepo.
+El patrón histórico `repo-service-sdd-polyrepo-poc/*` + `!repo-service-sdd-polyrepo-poc/.git/` se planteó para permitir la detección del hijo. Con la nueva estructura, el hub usa `repos/*` + `!repos/*/.git/`, pero no es equivalente: el directorio padre del hijo queda ignorado y Git no puede re-incluir su `.git/`. El hook instalado respeta `.gitignore`; no basta con que el repo exista en disco. Verifica siempre la salida de su script de estado.
 
-Mover los repos hijos a una carpeta repos/ (o components/) no resuelve por sí solo el trade-off del .gitignore que discutimos, pero sí mejora la claridad conceptual del hub y hace que el git status sea auto-explicativo: un directorio repos/ untracked es evidente que contiene repos coordinados, mientras que un repo-service-sdd-polyrepo-poc/ untracked en la raíz parece un error.
+## 2. Staging explícito en el hub
 
-Si más adelante quieres explorar otra opción, revisa la documentación de multi-repo-sync para confirmar si soporta targets en .specify/init-options.json. Si lo soporta, es la solución más limpia: git status limpio y hook funcionando.
+Si el folder del servicio aparece como untracked, `git add .` puede añadir un gitlink sin configurar un submódulo: el código no se sube al hub y otro clon no puede materializarlo a partir de esa referencia. Usa rutas específicas, por ejemplo `git add specs/`, para mantener la integridad del polyrepo.
 
+## 3. Separación conceptual
+
+Agrupar los hijos en `repos/` evita mezclar código y artefactos del hub en la raíz. Si el contenedor aparece como untracked, su nombre hace más evidente su propósito; el movimiento por sí solo no determina lo que muestra `git status`.
+
+El hecho de que git status ya no muestre repos/ es una señal positiva: significa que la exclusión visual de VS Code está funcionando y que Git no ve el directorio como un conjunto de archivos sueltos. La validación real de los hooks se hace, como siempre, comprobando que el agente sigue siendo capaz de navegar y operar sobre el repositorio hijo a través de sus comandos.
+
+## 4. Targets explícitos: soporte pendiente
+
+Los lectores de configuración de la versión instalada de `multi-repo-sync` no leen `targets` desde `.specify/init-options.json`. No confundir el array `targets` de la salida de estado con una opción de configuración. Antes de ignorar `repos/` completamente, confirma que una versión compatible permite descubrimiento y sincronización mediante destinos explícitos.
+
+## 5. La estructura `repos/` mejora la claridad, no elimina el trade-off
+
+La estructura `repos/` mejora la claridad del workspace y documenta la separación hub/repos, pero no elimina el trade-off del `.gitignore` para la detección del hook. Evaluar `targets` explícitos como solución definitiva, sujeto al soporte real de la extensión.
+
+La migración requiere actualizar `path` en `.meta.yaml`, las rutas del workspace y de los planes, y `specs_repo: "../../"` en el store del servicio. El hub configura `scan_depth: 3`; el script PowerShell instalado ya cubre `repos/<repo>` con profundidad 2, por lo que 3 es el valor adoptado, no un mínimo universal. El procedimiento y las verificaciones están en el [runbook](./poc-runbook.md).
