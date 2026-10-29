@@ -1,5 +1,4 @@
 
 # .gitignore del hub
-repo-service-sdd-polyrepo-poc/*
-!repo-service-sdd-polyrepo-poc/.git/
-
+repos/*
+!repos/*/.git/
