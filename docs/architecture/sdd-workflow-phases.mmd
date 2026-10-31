@@ -1,0 +1,48 @@
+sequenceDiagram
+    actor User
+    participant SpecKit
+    participant Git
+    participant GitHub as GitHub/PR
+
+    rect rgb(200, 220, 255)
+        Note over User,GitHub: ETAPA 1: SPECIFY (Especificación)
+        User->>SpecKit: 1. specify (crear spec)
+        SpecKit->>SpecKit: Generar spec.md
+        SpecKit->>Git: Auto-commit
+        Git->>GitHub: Push y crear PR #1
+        User->>GitHub: Revisar y aprobar
+        GitHub->>Git: Merge a main
+    end
+
+    rect rgb(220, 255, 200)
+        Note over User,GitHub: ETAPA 2: PLAN (Planificación)
+        User->>SpecKit: 2. plan (crear plan)
+        SpecKit->>SpecKit: Generar plan.md + design
+        SpecKit->>Git: Auto-commit
+        Git->>User: Cambios listos en local
+    end
+
+    rect rgb(255, 250, 200)
+        Note over User,GitHub: ETAPA 3: TASKS (Generación de tareas)
+        User->>SpecKit: 3. tasks (generar tareas)
+        SpecKit->>SpecKit: Generar tasks.md
+        SpecKit->>Git: Auto-commit
+        Git->>User: Cambios listos en local
+    end
+
+    rect rgb(255, 220, 200)
+        Note over User,GitHub: ETAPA 4: IMPLEMENT (Implementación)
+        User->>SpecKit: 4. implement (ejecutar)
+        SpecKit->>SpecKit: Procesar y ejecutar tareas
+        loop Cada tarea
+            SpecKit->>Git: Commit de cambios
+        end
+        Git->>GitHub: Push y crear PR #2
+        User->>GitHub: Code review + tests
+        GitHub->>Git: Merge a main
+    end
+
+    rect rgb(200, 255, 220)
+        Note over User,GitHub: ✅ COMPLETADO
+        User->>User: Feature en producción (main)
+    end

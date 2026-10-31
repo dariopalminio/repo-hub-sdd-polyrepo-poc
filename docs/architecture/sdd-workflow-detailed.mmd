@@ -1,0 +1,48 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 Usuario
+    participant SK as 📋 Spec Kit
+    participant G as 🔀 Git
+    participant GH as 🌐 GitHub
+
+    rect rgb(230, 245, 255)
+        User->>SK: specify describe
+        SK->>SK: Generar spec.md
+        SK->>G: [Auto-commit] Add specification
+        G->>GH: Push rama feature
+        GH->>GH: Create PR #1
+        User->>GH: Review & Approve
+        GH->>G: Merge → main
+    end
+
+    rect rgb(245, 255, 230)
+        User->>SK: plan
+        SK->>SK: Generar plan.md<br/>+ arquitectura
+        SK->>G: [Auto-commit] Add plan
+        G->>User: ✓ Ready for review
+    end
+
+    rect rgb(255, 250, 230)
+        User->>SK: tasks
+        SK->>SK: Generar tasks.md
+        SK->>G: [Auto-commit] Add tasks
+        G->>User: ✓ Ready for review
+    end
+
+    rect rgb(255, 240, 240)
+        User->>SK: implement
+        Note over SK: Ejecutando tareas...
+        loop Para c/tarea
+            SK->>SK: Implementar
+            SK->>G: Commit cambios
+        end
+        SK->>G: [Auto-commit] Implementation done
+        G->>GH: Push rama feature
+        GH->>GH: Create PR #2
+        User->>GH: Code Review
+        GH->>G: Merge → main
+    end
+
+    rect rgb(230, 255, 240)
+        Note over User,GH: ✅ COMPLETADO<br/>Feature en main
+    end

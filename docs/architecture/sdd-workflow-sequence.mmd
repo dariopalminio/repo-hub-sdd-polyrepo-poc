@@ -1,0 +1,54 @@
+sequenceDiagram
+    actor User as Usuario
+    participant SK as Spec Kit
+    participant Git as Git
+    participant GH as GitHub
+
+    User->>SK: specify (crear spec)
+    SK->>SK: Generar spec.md
+    SK->>Git: Auto-commit<br/>[Spec Kit] Add specification
+    Git->>GH: Push a rama feature
+    GH->>GH: Crear Pull Request #1
+    User->>User: Revisar spec en PR #1
+
+    Note over User,GH: ✓ Aprobación de spec
+    
+    User->>GH: Merge PR #1
+    GH->>Git: main ← feature/spec
+    Git->>User: Pull en local
+
+    User->>SK: plan (crear plan)
+    SK->>SK: Generar plan.md<br/>+ design docs
+    SK->>Git: Auto-commit<br/>[Spec Kit] Add implementation plan
+    Git->>User: Cambios listos
+
+    Note over User,SK: ✓ Revisión manual del plan
+
+    User->>SK: tasks (generar tareas)
+    SK->>SK: Generar tasks.md<br/>+ dependencias
+    SK->>Git: Auto-commit<br/>[Spec Kit] Add tasks
+    Git->>User: Cambios listos
+
+    Note over User,SK: ✓ Revisión de tareas
+
+    User->>SK: implement (ejecutar tareas)
+    SK->>SK: Procesar tasks.md
+    SK->>SK: Ejecutar implementación
+    SK->>Git: Auto-commit<br/>[Spec Kit] Implementation progress
+    loop Por cada tarea
+        SK->>SK: Implementar + Validar
+        SK->>Git: Commits de cambios
+    end
+    Git->>User: Código implementado
+
+    User->>Git: git push
+    Git->>GH: Push a rama feature
+    GH->>GH: Crear Pull Request #2
+    User->>User: Revisar implementación en PR #2
+
+    Note over User,GH: ✓ Code Review + Tests
+    
+    User->>GH: Merge PR #2
+    GH->>Git: main ← feature/implementation
+    
+    Note over User,GH: ✅ Feature completada en main
