@@ -30,8 +30,8 @@ No foundational tasks are required.
 
 **Independent Test**: Request `GET /greet/Ada`; verify HTTP 200, JSON content type, exact body `{"greeting":"Hello, Ada!"}`, and the matching OpenAPI path parameter and response.
 
-- [ ] T001 [P] [US1] Add the `GET /greet/{name}` OpenAPI operation, required path parameter, 200 greeting schema, and documented 400 response while preserving `/health` in `specs/002-greet-endpoint/contracts/openapi.yaml`
-- [ ] T002 [P] [US1] Add the valid `GET /greet/{name}` response to the existing request handler while preserving `/health` and the 404 fallback in `repos/repo-service-sdd-polyrepo-poc/src/server.js`
+- [X] T001 [P] [US1] Add the `GET /greet/{name}` OpenAPI operation, required path parameter, 200 greeting schema, and documented 400 response while preserving `/health` in `specs/002-greet-endpoint/contracts/openapi.yaml`
+- [X] T002 [P] [US1] Add the valid `GET /greet/{name}` response to the existing request handler while preserving `/health` and the 404 fallback in `repos/repo-service-sdd-polyrepo-poc/src/server.js`
 
 **Checkpoint**: A valid name produces the contract-defined greeting without changing existing routes.
 
@@ -41,7 +41,7 @@ No foundational tasks are required.
 
 **Independent Test**: Request `/greet`, `/greet/`, and `/greet/Ada-Smith`; verify each returns HTTP 400 while `/health` and an unrelated path retain their existing responses.
 
-- [ ] T003 [US2] Validate the decoded name as one or more ASCII letters or digits and return HTTP 400 for missing, empty, malformed, or invalid names in `repos/repo-service-sdd-polyrepo-poc/src/server.js`
+- [X] T003 [US2] Validate the decoded name as one or more ASCII letters or digits and return HTTP 400 for missing, empty, malformed, or invalid names in `repos/repo-service-sdd-polyrepo-poc/src/server.js`
 
 **Checkpoint**: Valid and invalid name cases have distinct documented responses; health and 404 behavior remain unchanged.
 
@@ -49,7 +49,7 @@ No foundational tasks are required.
 
 **Purpose**: Verify the full contract and preserve existing service behavior.
 
-- [ ] T004 Run the valid, invalid, health, and 404 scenarios in `specs/002-greet-endpoint/quickstart.md` and correct the guide if observed behavior differs
+- [X] T004 Run the valid, invalid, health, and 404 scenarios in `specs/002-greet-endpoint/quickstart.md` and correct the guide if observed behavior differs
 
 ## Dependencies & Execution Order
 
