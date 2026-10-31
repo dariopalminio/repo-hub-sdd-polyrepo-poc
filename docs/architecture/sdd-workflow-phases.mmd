@@ -10,16 +10,21 @@ sequenceDiagram
         SpecKit->>SpecKit: Generar spec.md
         SpecKit->>Git: Auto-commit
         Git->>GitHub: Push y crear PR #1
-        User->>GitHub: Revisar y aprobar
-        GitHub->>Git: Merge a main
+    end
+
+    rect rgb(150, 180, 255)
+        Note over User,GitHub: ETAPA 1b: REVIEW SPEC (Revisión de Especificación)
+        User->>GitHub: Revisar spec en PR #1
+        User->>GitHub: Solicitar cambios (si es necesario)
+        GitHub->>Git: Merge a main (cuando esté aprobado)
     end
 
     rect rgb(220, 255, 200)
         Note over User,GitHub: ETAPA 2: PLAN (Planificación)
+        User->>Git: Pull cambios de main
         User->>SpecKit: 2. plan (crear plan)
         SpecKit->>SpecKit: Generar plan.md + design
         SpecKit->>Git: Auto-commit
-        Git->>User: Cambios listos en local
     end
 
     rect rgb(255, 250, 200)
@@ -27,7 +32,6 @@ sequenceDiagram
         User->>SpecKit: 3. tasks (generar tareas)
         SpecKit->>SpecKit: Generar tasks.md
         SpecKit->>Git: Auto-commit
-        Git->>User: Cambios listos en local
     end
 
     rect rgb(255, 220, 200)
@@ -38,8 +42,14 @@ sequenceDiagram
             SpecKit->>Git: Commit de cambios
         end
         Git->>GitHub: Push y crear PR #2
-        User->>GitHub: Code review + tests
-        GitHub->>Git: Merge a main
+    end
+
+    rect rgb(200, 150, 255)
+        Note over User,GitHub: ETAPA 4b: REVIEW IMPLEMENTATION (Revisión de Código)
+        User->>GitHub: Code review en PR #2
+        User->>GitHub: Validar tests + cambios
+        User->>GitHub: Solicitar cambios (si es necesario)
+        GitHub->>Git: Merge a main (cuando esté aprobado)
     end
 
     rect rgb(200, 255, 220)
