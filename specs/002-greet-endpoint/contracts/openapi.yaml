@@ -1,0 +1,61 @@
+openapi: 3.1.0
+info:
+  title: repo-service API
+  version: 0.1.0
+  description: API contract for the repo-service proof of concept.
+servers:
+  - url: /
+security: []
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Report service availability
+      responses:
+        '200':
+          description: The service can handle requests.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                properties:
+                  status:
+                    type: string
+                    const: ok
+                additionalProperties: false
+              example:
+                status: ok
+  /greet/{name}:
+    get:
+      operationId: getGreeting
+      summary: Greet a caller by name
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: A non-empty name containing only ASCII letters and digits.
+          schema:
+            type: string
+            minLength: 1
+            pattern: '^[A-Za-z0-9]+$'
+          example: Ada
+      responses:
+        '200':
+          description: Greeting generated for the supplied name.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - greeting
+                properties:
+                  greeting:
+                    type: string
+                    pattern: '^Hello, [A-Za-z0-9]+!$'
+                additionalProperties: false
+              example:
+                greeting: Hello, Ada!
+        '400':
+          description: The name is empty, malformed, or contains non-alphanumeric characters.
