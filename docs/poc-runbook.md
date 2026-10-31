@@ -198,7 +198,15 @@ git push
 
 ---
 
-### 🪜 Paso 6: Instalar la extensión `multi-repo-sync` (opcional pero recomendada)
+### 🪜 Paso 6: Extensiones de Spec-Kit
+
+#### Instalar la extensión `git` (requerida)
+```powershell
+specify extension add git
+specify extension list
+```
+
+#### Instalar la extensión `multi-repo-sync` (opcional pero recomendada)
 
 La extensión propaga la rama de feature a los repos hijos automáticamente cuando ejecutas `/speckit.plan` y `/speckit.tasks`. Sin ella, tendrás que crear la rama `feat/001-health-check` manualmente en el repo servicio.
 
