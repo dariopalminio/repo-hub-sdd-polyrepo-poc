@@ -99,11 +99,13 @@ Riesgo de drift: Las especificaciones de diferentes repos pueden desincronizarse
 ### Estrategia B: "Un store (hub), muchos repos"
 
 **Implementaciones principales:**
-- **OpenSpec Stores (beta):** Un "store" es un repositorio independiente cuyo único trabajo es la planificación. Los repos de código se registran en la máquina para apuntar a él, y el agente lee los specs del store mientras escribe código en el repo correspondiente.
-- **Meta-Repo (con Spec-Kit):** Aunque Spec-Kit no tiene un "store" nativo, puedes lograr el mismo efecto creando un repo central (product) que albergue .specify/ y todos los specs. Al abrir un workspace multi-root (con meta git clone), el agente puede ver el hub y los repos de código simultáneamente, y usar /speckit.implement para escribir en los repos hijos.
-- **Specularis:** Una capa que se añade sobre tu proyecto para gobernar todos los markdown desde un solo lugar (canónico + human-in-the-loop), con auto-sincronización y gestión de conflictos para que todos los agentes y repos vean las mismas especificaciones canónicas.
+- **Meta-Repo con meta CLI + Spec-Kit:** Aunque Spec-Kit no tiene un "store" nativo, puedes lograr el mismo efecto creando un repo central (product) que albergue .specify/ y todos los specs. Al abrir un workspace multi-root (con meta git clone), el agente puede ver el hub y los repos de código simultáneamente, y usar /speckit.implement para escribir en los repos hijos.
+- **Python metarepo (git-metarepo mediante pip install):** Permite gestionar múltiples repositorios de código como un solo workspace coordinado desde Python. Utiliza YAML y permite alojar el manifiesto (manifest.yml) en el mismo repositorio principal. Esto reduce el ruido semántico en la ventana de contexto del LLM y simplifica la estructura del sandbox.
+- **Google Repo (Herramienta oficial de Android):** Permite gestionar múltiples repositorios de código como un solo workspace coordinado, similar a un meta-repo, pero con enfoque en proyectos Android. Altamente probado en escalas masivas; descargas multihilo eficientes.
 - **Polyrepo Workspace Kit:** Una capa de coordinación ligera que ayuda a humanos y agentes a compartir un modelo de workspace explícito sin pretender que todos los repos pertenezcan a un monorepo.
-- **Workspace de VS Code + .gitmodules + Make:** es una implementación plausible en teoría, pero en la práctica falla en puntos crítico. El workspace multi-root es útil para ti, pero Copilot Coding Agent no soporta sesiones multi-root de forma nativa. Los submódulos son, con diferencia, la pieza más problemática de la combinación. Hay tres fallos documentados que afectan directamente a tu flujo con Copilot. El code review de Copilot falla cuando un PR toca un submódulo. ¿Y la extensión multi-repo-sync de Spec-Kit? Existe y soporta submódulos: detecta los repos afectados parseando .gitmodules y crea la rama de feature en cada uno. Pero esto solo resuelve la propagación de ramas, no el acceso del agente. La extensión crea la rama, pero Copilot sigue sin poder leer ni escribir en el submódulo. Es un parche parcial, no una solución.
+- **Git Submodules (.gitmodules + Make o VS Code Workspace):** es una implementación plausible en teoría, pero en la práctica falla en puntos crítico. El workspace multi-root es útil para ti, pero Copilot Coding Agent no soporta sesiones multi-root de forma nativa. Los submódulos son, con diferencia, la pieza más problemática de la combinación. Hay tres fallos documentados que afectan directamente a tu flujo con Copilot. El code review de Copilot falla cuando un PR toca un submódulo. ¿Y la extensión multi-repo-sync de Spec-Kit? Existe y soporta submódulos: detecta los repos afectados parseando .gitmodules y crea la rama de feature en cada uno. Pero esto solo resuelve la propagación de ramas, no el acceso del agente. La extensión crea la rama, pero Copilot sigue sin poder leer ni escribir en el submódulo. Es un parche parcial, no una solución.
+- **OpenSpec Stores (beta):** Un "store" es un repositorio independiente cuyo único trabajo es la planificación. Los repos de código se registran en la máquina para apuntar a él, y el agente lee los specs del store mientras escribe código en el repo correspondiente.
+- **Specularis:** Una capa que se añade sobre tu proyecto para gobernar todos los markdown desde un solo lugar (canónico + human-in-the-loop), con auto-sincronización y gestión de conflictos para que todos los agentes y repos vean las mismas especificaciones canónicas.
 
 ✅ Ventajas:
 - Fuente de verdad única: Todos los agentes y equipos consultan las mismas especificaciones.
@@ -128,13 +130,23 @@ Riesgo de drift: Las especificaciones de diferentes repos pueden desincronizarse
 - **Dispersión de specs (si no se gestiona bien):** Cada repo termina con su propio specs/, lo que puede llevar a la fragmentación que buscas evitar.
 - **Requiere disciplina:** Necesitas un proceso claro para vincular las implementation specs al umbrella spec y mantener los contratos sincronizados.
 
-#### 💎 Conclusión
+## 💎 Conclusión
 
 La taxonomía de tres estrategias es correcta y completa. Cada una responde a una filosofía distinta sobre dónde debe vivir la "verdad" de las especificaciones. La elección depende de las prioridades:
 
 - **Si buscas “máxima centralización” y usas Spec-Kit:** la Estrategia B con un Meta-Repo es la que mejor equilibra tus requisitos de no dispersar specs y mantener compatibilidad con /speckit.implement.
 - **Si prefieres “seguir la recomendación oficial de los mantenedores de Spec-Kit”:** la Estrategia C es el camino, aceptando que cada repo tendrá su propia spec de implementación.
-- **La Estrategia A es la más simple pero la que más dispersa el conocimiento, y probablemente no sea la adecuada para tu caso de microservicios con features verticales.**
+- La Estrategia A es la más simple pero la que más dispersa el conocimiento, y probablemente no sea la adecuada para casos de microservicios con features verticales.
 
 La buena noticia es que puedes hibridar: por ejemplo, usar el Meta-Repo (B) como infraestructura, pero organizar los specs dentro de él siguiendo el patrón de umbrella spec + contratos (C) para mantener la disciplina de CDD.
+
+### Veredicto y Recomendación de Diseño
+
+Para la estrategia "Un store, muchos repos" operada por agentes autónomos, meta CLI (gitkb/meta) sigue siendo la solución recomendada.
+
+Justificación Arquitectónica y Descarte de Alternativas:
+
+- **Por qué se descarta Gitmodules:** Aunque es el estándar de facto para humanos, los estados frágiles (Detached HEAD) que produce Gitmodules crean trampas mortales para los agentes de IA, que pueden quedar atrapados en bucles infinitos tratando de resolver conflictos de versión, consumiendo cuota y desbordando el budget de contexto.
+- **Prevención de Estados Inconsistentes:** La limitación crítica de Git (y sus submódulos) en operaciones distribuidas es la falta de atomicidad. Meta CLI permite al agente de IA orquestar un snapshot previo a la modificación transversal. Si una validación o test falla en el repo-03, el agente puede ejecutar un restore automático, garantizando un mecanismo de rollback seguro (alineado con las buenas prácticas de Harness Engineering).
+- **Optimización del Contexto:** Al ofrecer salidas nativas estructuradas y un servidor MCP, minimiza el riesgo de Context Stuffing y maximiza la relación señal-ruido, respetando el presupuesto de tokens establecido en nuestros estándares operativos.
 
