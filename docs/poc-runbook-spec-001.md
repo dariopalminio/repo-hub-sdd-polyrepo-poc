@@ -396,6 +396,23 @@ Así se materializan los hijos en las rutas declaradas en `.meta.yaml`. Consulta
 
 ---
 
+
+### Git y PR
+
+Los repos son independientes, así que los cambios se confirman por separado. Antes, revisa git status en ambos. En el hub, stagea solo los artefactos de la feature y deja fuera poc-runbook.md salvo que ese cambio también sea intencional:
+```powershell
+git add -- specs/001-health-endpoint
+git commit -m "docs: complete health endpoint feature"
+git push
+```
+
+En el repo servicio:
+```powershell
+git -C repos/repo-service-sdd-polyrepo-poc add -- src/server.js
+git -C repos/repo-service-sdd-polyrepo-poc commit -m "feat: add health endpoint"
+git -C repos/repo-service-sdd-polyrepo-poc push -u origin 001-health-endpoint
+```
+
 ### 💎 Resultado esperado
 
 Si los cinco criterios se cumplen, habrás validado que **`meta` CLI materializa el Meta-Repo, Spec-Kit centraliza la intención en el hub, y Copilot escribe en el repo servicio sin dispersar specs**. La arquitectura funciona con solo dos repos, y escala a N agregando más entradas al `.meta.yaml` y más folders al workspace multi-root.
