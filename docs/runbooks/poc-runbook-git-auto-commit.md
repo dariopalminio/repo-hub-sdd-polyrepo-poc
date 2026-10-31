@@ -40,7 +40,7 @@ El archivo de configuración se encuentra en:
 Verifica que existe:
 
 ```powershell
-cd D:\Projects\poc-sdd-polyrepo  # O tu ruta del proyecto
+cd D:\MyProjects\poc-sdd-polyrepo  # O tu ruta del proyecto
 Test-Path .specify\extensions\git\git-config.yml -Type Leaf
 ```
 
