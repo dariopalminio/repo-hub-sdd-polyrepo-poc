@@ -125,10 +125,14 @@ Riesgo de drift: Las especificaciones de diferentes repos pueden desincronizarse
 ✅ Ventajas:
 - **Alineada con la filosofía de Spec-Kit:** Es la aproximación que los mantenedores consideran "la recomendada" para polyrepo.
 - **Contratos explícitos:** CDD asegura que las interfaces entre servicios tengan un dueño claro y versionado.
+- **Una capa de gobernanza de la intención:** Permite centralizar la intención del sistema mientras cada repositorio mantiene su implementación específica.
 
 ❌ Desventajas:
 - **Dispersión de specs (si no se gestiona bien):** Cada repo termina con su propio specs/, lo que puede llevar a la fragmentación que buscas evitar.
 - **Requiere disciplina:** Necesitas un proceso claro para vincular las implementation specs al umbrella spec y mantener los contratos sincronizados.
+- **Sincronización obligatoria y dependencias:** Es necesario mantener sincronizadas las implementation specs con el umbrella spec: La copia física del system-spec/ dentro de cada repositorio de implementación o mantener una dependencia a un artefacto versionado como paquete.
+- **Extensión de Spec-Kit:** Este patrón puede requerir que adaptes o extiendas Spec-Kit (spec-kit-shared-knowledge, spec-kit-arch-governance) para manejar la relación entre el umbrella spec y las implementation specs, lo que puede implicar scripts adicionales o convenciones de proyecto.
+- **Mayor complejidad inicial:** Implementar y mantener este patrón puede ser más complejo que las estrategias A o B, especialmente si tu equipo no está familiarizado con CDD y la gestión de contratos.
 
 ## 💎 Conclusión
 
