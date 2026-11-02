@@ -1,56 +1,133 @@
 # Runbook: Configurar Commits Automáticos en Spec Kit
 
-Este runbook te guía a través de la configuración de commits automáticos en Spec Kit, eliminando la necesidad de ejecutar `git commit` manualmente después de cada etapa del ciclo SDD (specify → plan → tasks → implement).
+- **Responsable:** Equipo de Ingeniería / DevOps
+- **Último ensayo:** 2026-10-31
+- **Resultado esperado:** Commits automáticos ejecutándose tras completar cada comando Spec Kit (specify → plan → tasks → implement), manteniendo un historial Git limpio y ordenado sin intervención manual
 
-## 🎯 Objetivo
+## Cuándo usar
 
-Habilitar commits automáticos que se ejecuten tras completar cada comando Spec Kit, manteniendo un historial Git limpio y ordenado sin intervención manual.
+Utiliza este runbook cuando necesites habilitar commits automáticos en Spec Kit para:
+- Automatizar la generación de commits tras cada etapa del ciclo SDD
+- Mantener un historial Git limpio y ordenado sin ejecución manual de `git commit`
+- Implementar una estrategia de control de versiones consistente en el equipo
+- Sincronizar automáticamente los cambios en el repositorio Git tras modificaciones de especificaciones, planes, tareas e implementación
 
-## 📋 Requisitos previos
+Este procedimiento aplica a cualquier proyecto con Spec Kit inicializado y un repositorio Git válido.
 
-Antes de empezar, verifica que tienes:
-- **Git** instalado y configurado (`git config user.name` y `git config user.email`)
-- **Spec-Kit inicializado** en tu proyecto (debe existir `.specify/` en la raíz)
-- **Permisos de escritura** en el repositorio Git
-- **Un repositorio Git válido** en el directorio del proyecto
+## Preparación
 
-Verifica la inicialización:
+- **Herramientas y acceso necesarios:**
+  - Git instalado y configurado (`git config user.name` y `git config user.email`)
+  - Spec-Kit inicializado en el proyecto (debe existir `.specify/` en la raíz)
+  - Permisos de escritura en el repositorio Git
+  - Un repositorio Git válido en el directorio del proyecto
+  - Editor de texto o VS Code para modificar archivos YAML
 
-```powershell
-# Confirmar que Spec Kit está instalado
-specify --version
+- **Servicio y entorno de destino:**
+  - Repositorio local en `D:\MyProjects\poc-sdd-polyrepo` (o ruta equivalente del proyecto)
+  - Archivo de configuración: `.specify/extensions/git/git-config.yml`
 
-# Confirmar que estamos en un repo Git
-git status
+- **Ventana de ejecución aprobada:**
+  - Cualquier momento en que tengas acceso al repositorio
+  - Recomendado fuera de horas de trabajo colaborativo intenso
 
-# Verificar que la carpeta .specify existe
-Test-Path .specify -Type Container
-```
+- **Paneles de control y documentación pertinentes:**
+  - [Documentación oficial de Spec Kit - Git Extension](https://docs.example.com/spec-kit/git)
+  - [Conventional Commits](https://www.conventionalcommits.org/)
+  - [Guía SDD del Polyrepo POC](../sdd-and-polyrepo.md)
 
----
+## Procedimiento
 
-## 🪜 Paso 1: Ubicar el archivo de configuración Git
+1. **Verificar el entorno de destino**
+   - Instrucción: Confirma que Git, Spec Kit y el repositorio están disponibles
+   - Comandos: `specify --version`, `git status`, `Test-Path .specify -Type Container`
+   - Observación esperada: Los comandos se ejecutan sin errores; el repositorio está disponible
 
-El archivo de configuración se encuentra en:
+2. **Ubicar el archivo de configuración**
+   - Instrucción: Verifica que existe `.specify/extensions/git/git-config.yml`
+   - Comando: `Test-Path .specify\extensions\git\git-config.yml -Type Leaf`
+   - Observación esperada: Devuelve `True`
 
-```
-.specify/extensions/git/git-config.yml
-```
+3. **Familiarizarse con opciones de configuración**
+   - Instrucción: Abre `.specify/extensions/git/git-config.yml` e identifica las secciones: `commit_style`, `auto_commit.default`, y configuraciones específicas por comando
+   - Observación esperada: El archivo está bien formado con indentación YAML correcta (2 espacios)
 
-Verifica que existe:
+4. **Elegir estrategia de implementación**
+   - Instrucción: Selecciona entre:
+     - A) Habilitar globalmente (`default: true`)
+     - B) Habilitar solo en etapas clave
+     - C) Usar Conventional Commits
+   - Observación esperada: Estrategia documentada y lista para aplicar
 
-```powershell
-cd D:\MyProjects\poc-sdd-polyrepo  # O tu ruta del proyecto
-Test-Path .specify\extensions\git\git-config.yml -Type Leaf
-```
+5. **Aplicar la configuración**
+   - Instrucción: Edita `.specify/extensions/git/git-config.yml` con VS Code o PowerShell según tu estrategia
+   - Comando: `code .specify\extensions\git\git-config.yml`
+   - Observación esperada: El archivo es guardado; sin errores de sintaxis YAML
 
-Si devuelve `True`, estás listo para continuar.
+6. **Validar la configuración**
+   - Instrucción: Verifica que el YAML es válido
+   - Comandos: `cat .specify/extensions/git/git-config.yml` y `(Get-Content .specify/extensions/git/git-config.yml) | Select-String -Pattern "default:"`
+   - Observación esperada: La salida muestra `default: true` (o `false`, según estrategia elegida)
 
----
+7. **Configurar usuario Git**
+   - Instrucción: Ejecuta los comandos si no está configurado
+   - Comandos: `git config user.name "Tu Nombre"` y `git config user.email "tu.email@ejemplo.com"`
+   - Verificación: `git config --list | Select-String "user\."`
+   - Observación esperada: Aparecen nombre y email en la salida
 
-## 🔧 Paso 2: Entender las opciones de configuración
+8. **Probar la configuración**
+   - Instrucción: Ejecuta un comando Spec Kit pequeño
+   - Comandos: `echo "test" > test-file.txt`, `git add test-file.txt`, `specify clarify my-feature`, `git log --oneline -5`
+   - Observación esperada: Aparecen dos commits nuevos: uno de Spec Kit y uno anterior
 
-Abre el archivo [`.specify/extensions/git/git-config.yml`](./.specify/extensions/git/git-config.yml) y familiarízate con las secciones:
+9. **Verificar el resultado**
+   - Instrucción: Confirma que los commits automáticos se crean tras cada comando
+   - Comando: `git log --grep="\[Spec Kit\]"`
+   - Observación esperada: Se muestran commits con etiqueta `[Spec Kit]` en el historial
+
+10. **Documentar el estado**
+    - Instrucción: Registra la estrategia utilizada y los cambios realizados en la configuración
+    - Observación esperada: Registro completado en `git log`
+
+## Si un paso falla
+
+**Detenerse ante las siguientes condiciones:**
+- El archivo `.specify/extensions/git/git-config.yml` no existe o no es accesible
+- Errores de validación YAML (indentación incorrecta)
+- Git no está configurado con `user.name` y `user.email`
+- No hay cambios pendientes para commitear tras ejecutar comandos Spec Kit
+- El valor `default` sigue siendo `false` tras la edición
+
+**Registrar el paso fallido:** Documenta qué paso falló, el error exacto recibido y las circunstancias de la falla.
+
+**Procedimiento de recuperación:**
+1. **Verificar causa raíz** — Revisa la sección "Solución de problemas" en la documentación del runbook
+2. **Solucionar específicamente:**
+   - Si `default: false`: Cambia a `true` según Paso 3
+   - Si Git no está configurado: Ejecuta `git config user.name "Tu Nombre"` y `git config user.email "tu.email@ejemplo.com"`
+   - Si YAML está malformado: Verifica indentación con `Get-Content .specify/extensions/git/git-config.yml \| Select-String -Pattern "auto_commit" -Context 2`
+   - Si no hay cambios: Verifica con `git status` que hay cambios sin stagear
+3. **Contactar al equipo de guardia:** Utiliza el canal #spec-kit-support en Slack o abre un issue en el repositorio si el problema persiste
+
+## Checklist de completitud
+
+- [ ] Archivo `.specify/extensions/git/git-config.yml` existe y es accesible
+- [ ] He elegido una estrategia (A: global, B: por etapa, o C: Conventional Commits)
+- [ ] He actualizado `auto_commit.default` o los valores específicos en la configuración
+- [ ] He validado el YAML sin errores de indentación
+- [ ] He ejecutado `git config user.name` y `git config user.email`
+- [ ] He probado con un comando Spec Kit pequeño
+- [ ] He verificado que el commit se creó automáticamente
+- [ ] He revisado el historial con `git log --oneline`
+- [ ] Resultado esperado verificado
+- [ ] Cambios registrados en el historial de cambios (`git log`)
+- [ ] Documentación de estrategia actualizada (si se modificó el procedimiento)
+
+## Documentación adicional: Estrategias de configuración
+
+### Archivo de configuración `.specify/extensions/git/git-config.yml`
+
+El archivo contiene las siguientes secciones principales:
 
 ```yaml
 # Estilo de commit: "fixed" o "conventional"
@@ -71,263 +148,83 @@ auto_commit:
   after_implement:
     enabled: false
     message: "[Spec Kit] Implementation progress"
-  # ... más comandos disponibles
 ```
 
-### Opciones principales:
+#### Opciones de configuración:
 
 | Clave | Valores | Descripción |
 |-------|---------|-------------|
-| `commit_style` | `fixed`, `conventional` | `fixed`: usa mensajes predefinidos. `conventional`: genera mensajes automáticos siguiendo el estándar Conventional Commit |
-| `auto_commit.default` | `true`, `false` | Habilita/deshabilita auto-commit globalmente para todos los comandos |
+| `commit_style` | `fixed`, `conventional` | `fixed`: usa mensajes predefinidos. `conventional`: genera mensajes automáticos siguiendo Conventional Commit |
+| `auto_commit.default` | `true`, `false` | Habilita/deshabilita auto-commit globalmente |
 | `auto_commit.after_<cmd>.enabled` | `true`, `false` | Habilita/deshabilita auto-commit para un comando específico |
-| `auto_commit.after_<cmd>.message` | string | Mensaje de commit personalizado (solo aplica con `commit_style: fixed`) |
+| `auto_commit.after_<cmd>.message` | string | Mensaje personalizado (solo con `commit_style: fixed`) |
 
----
-
-## ✅ Paso 3: Elegir tu estrategia
-
-### Estrategia A: Habilitar globalmente (Recomendado para principiantes)
-
-Abre [`.specify/extensions/git/git-config.yml`](./.specify/extensions/git/git-config.yml) y cambia:
+### Estrategia A: Habilitar globalmente (Recomendado)
 
 ```yaml
 auto_commit:
-  default: true  # ← Cambiar de 'false' a 'true'
+  default: true
 ```
 
-**Resultado:** Commits automáticos tras **todos** los comandos Spec Kit (specify, plan, tasks, implement, etc.).
-
-**Ventaja:** Configuración simple, historial Git limpio sin esfuerzo.
-
----
+Commits automáticos tras todos los comandos Spec Kit. Configurable simple.
 
 ### Estrategia B: Habilitar solo en etapas clave
 
-Si prefieres más control, habilita solo los comandos importantes:
-
 ```yaml
 auto_commit:
-  default: false  # Mantener deshabilitado globalmente
+  default: false
   after_specify:
     enabled: true
-    message: "[Spec Kit] Add specification"
   after_plan:
     enabled: true
-    message: "[Spec Kit] Add implementation plan"
   after_tasks:
     enabled: true
-    message: "[Spec Kit] Add tasks"
   after_implement:
     enabled: true
-    message: "[Spec Kit] Implementation progress"
 ```
 
-**Resultado:** Commits automáticos solo en las 4 etapas principales, sin commits intermedios.
+Commits automáticos solo en las 4 etapas principales; control granular.
 
-**Ventaja:** Control granular; evita commits innecesarios.
-
----
-
-### Estrategia C: Mensajes dinámicos (Conventional Commits)
-
-Para un historial más estructurado, usa Conventional Commits:
+### Estrategia C: Conventional Commits
 
 ```yaml
-commit_style: conventional  # ← Cambiar de 'fixed'
-
+commit_style: conventional
 auto_commit:
   default: true
 ```
 
-**Resultado:** Mensajes generados automáticamente como:
-- `feat: add health-check endpoint specification`
-- `docs: update implementation plan with API schema`
-- `refactor: reorganize task structure`
+Mensajes generados automáticamente: `feat:`, `docs:`, `refactor:`, etc. Compatible con release automation.
 
-**Ventaja:** Historial Git más semántico; compatible con herramientas de release automation.
+## Solución de problemas
 
----
+### Problema: "El commit no se ejecutó automáticamente"
 
-## 🛠️ Paso 4: Aplicar la configuración
+**Causa y solución:**
 
-Una vez hayas elegido tu estrategia, edita el archivo:
+| Causa | Verificación | Solución |
+|-------|--------------|----------|
+| `default` sigue siendo `false` | `(Get-Content .specify/extensions/git/git-config.yml) \| Select-String -Pattern "^\s*default:"` | Cambia a `true` en `.specify/extensions/git/git-config.yml` |
+| No hay cambios para commitear | `git status` | Spec Kit solo commitea si hay cambios sin stagear; esto es correcto |
+| Git no está configurado | `git config --list \| Select-String "user\."` | Ejecuta `git config user.name "Tu Nombre"` y `git config user.email "tu.email@ejemplo.com"` |
+| YAML malformado | `Get-Content .specify/extensions/git/git-config.yml \| Select-String -Pattern "auto_commit" -Context 2` | Verifica indentación: `default:` debe estar indentado con 2 espacios bajo `auto_commit:` |
 
-### Opción 1: Con VS Code
+### Problema: "¿Puedo deshabilitar auto-commit después?"
 
-1. Abre VS Code en tu workspace
-2. Presiona `Ctrl+P`
-3. Busca y abre `.specify/extensions/git/git-config.yml`
-4. Realiza los cambios según tu estrategia (Paso 3)
-5. Guarda el archivo (`Ctrl+S`)
+Sí. Cambia `auto_commit.default` a `false` en `.specify/extensions/git/git-config.yml`. Los commits anteriores permanecen en el historial.
 
-### Opción 2: Con PowerShell
+### Problema: "¿Cómo customizo los mensajes?"
 
-```powershell
-# Editar con notepad (mantiene formato YAML)
-notepad .specify\extensions\git\git-config.yml
-
-# O con tu editor preferido
-code .specify\extensions\git\git-config.yml
-```
-
----
-
-## ✨ Paso 5: Validar la configuración
-
-Verifica que tu archivo YAML es válido:
-
-```powershell
-# Verificar que el archivo existe y es accesible
-cat .specify/extensions/git/git-config.yml | Select-Object -First 20
-
-# Confirmar que `default` está establecido correctamente
-(Get-Content .specify/extensions/git/git-config.yml) | 
-  Select-String -Pattern "default:" | Select-Object -First 1
-```
-
-Ejemplo de salida esperada (Estrategia A):
-```
-  default: true
-```
-
----
-
-## 🧪 Paso 6: Probar la configuración
-
-Ahora prueba el auto-commit con un pequeño cambio:
-
-```powershell
-# 1. Crear un cambio dummy (ej: agregar un archivo temp)
-echo "test" > test-file.txt
-git add test-file.txt
-
-# 2. Ejecutar un comando Spec Kit (ej: specify o clarify)
-specify clarify my-feature
-
-# 3. Verificar el historial Git
-git log --oneline -5
-```
-
-**Resultado esperado:** Deberías ver dos commits nuevos:
-1. `[Spec Kit] ...` (auto-commit de Spec Kit)
-2. Tu commit anterior
-
-Si ves solo uno o ninguno, verifica:
-- ¿Tienes cambios sin commitear antes de correr Spec Kit?
-- ¿`default: true` está activo en la configuración?
-- ¿Es un repositorio Git válido? (`git status` sin errores)
-
----
-
-## 🚀 Paso 7: Usar en tu flujo de trabajo SDD completo
-
-Una vez validado, usa normalmente:
-
-```powershell
-# Etapa 1: Especificación
-specify specify "Crear endpoint de health check"
-# → Auto-commit: "[Spec Kit] Add specification"
-
-# Etapa 2: Planificación (revisar primero)
-specify plan
-# → Auto-commit: "[Spec Kit] Add implementation plan"
-
-# Etapa 3: Generación de tareas
-specify tasks
-# → Auto-commit: "[Spec Kit] Add tasks"
-
-# Etapa 4: Implementación
-specify implement
-# → Auto-commit: "[Spec Kit] Implementation progress"
-```
-
-No necesitas ejecutar `git commit` manualmente entre etapas.
-
----
-
-## 🐛 Solución de problemas
-
-### "El commit no se ejecutó automáticamente"
-
-**Causa 1:** `default` sigue siendo `false`
-
-```powershell
-# Verificar valor actual
-(Get-Content .specify/extensions/git/git-config.yml) | 
-  Select-String -Pattern "^\s*default:"
-```
-
-**Solución:** Cambia a `true` según Paso 3.
-
----
-
-**Causa 2:** No hay cambios para commitear
-
-Spec Kit solo commitea si hay cambios sin stagear. Si no hay cambios, salta silenciosamente (esto es correcto).
-
-```powershell
-# Verificar cambios
-git status
-```
-
----
-
-**Causa 3:** Git no está configurado
-
-```powershell
-# Configurar usuario de Git (requerido para commits)
-git config user.name "Tu Nombre"
-git config user.email "tu.email@ejemplo.com"
-
-# Verificar configuración
-git config --list | Select-String "user\."
-```
-
----
-
-**Causa 4:** Archivo YAML malformado
-
-YAML es sensible a indentación. Verifica:
-
-```powershell
-# Comparar con un formato correcto
-Get-Content .specify/extensions/git/git-config.yml | 
-  Select-String -Pattern "auto_commit" -Context 2
-```
-
-Asegúrate de que `default:` está indentado con 2 espacios bajo `auto_commit:`.
-
----
-
-### "¿Puedo deshabilitar auto-commit después?"
-
-Sí. Simplemente cambia:
-
-```yaml
-auto_commit:
-  default: false  # ← Vuelve a false
-```
-
-Los commits anteriores permanecen en el historial.
-
----
-
-### "¿Cómo customizo los mensajes?"
-
-Con `commit_style: fixed`, edita los mensajes:
+Con `commit_style: fixed`, edita los mensajes en `.specify/extensions/git/git-config.yml`:
 
 ```yaml
 after_specify:
   enabled: true
-  message: "[MI-ETIQUETA] Nueva especificación"  # ← Personaliza aquí
+  message: "[MI-ETIQUETA] Nueva especificación"
 ```
 
 Con `commit_style: conventional`, los mensajes se generan automáticamente leyendo los cambios.
 
----
-
-## 📚 Referencia rápida
+### Referencia rápida de comandos
 
 | Tarea | Comando |
 |-------|---------|
@@ -336,30 +233,4 @@ Con `commit_style: conventional`, los mensajes se generan automáticamente leyen
 | Ver historial de commits | `git log --oneline -10` |
 | Deshabilitar auto-commit | Cambiar `default: true` a `false` en git-config.yml |
 | Ver commits automáticos | `git log --grep="\[Spec Kit\]"` |
-
----
-
-## ✅ Checklist de completitud
-
-- [ ] Archivo `.specify/extensions/git/git-config.yml` existe
-- [ ] He elegido una estrategia (A, B o C)
-- [ ] He actualizado `auto_commit.default` o los valores específicos
-- [ ] He validado el YAML (sin errores de indentación)
-- [ ] He ejecutado `git config user.name` y `git config user.email`
-- [ ] He probado con un comando Spec Kit pequeño
-- [ ] He verificado que el commit se creó automáticamente
-- [ ] He revisado el historial con `git log --oneline`
-
----
-
-## 🎓 Lectura adicional
-
-- [Documentación oficial de Spec Kit - Git Extension](https://docs.example.com/spec-kit/git)
-- [Conventional Commits](https://www.conventionalcommits.org/) — Estándar para mensajes semánticos
-- [Guía SDD del Polyrepo POC](../sdd-and-polyrepo.md)
-
----
-
-**Última actualización:** 2026-10-31  
-**Autor:** Copilot  
-**Estado:** Listo para producción
+| Verificar usuario Git | `git config --list \| Select-String "user\."` |
